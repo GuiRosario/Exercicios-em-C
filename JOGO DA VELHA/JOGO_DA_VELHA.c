@@ -446,6 +446,56 @@ void P1VSCPU(){
 
 
 }
+void multiplayer(){
+	int continuar = 1;
+	char player;
+	int Posi;
+	char qcomeca; 
+		
+	printf("QUEM JOGA PRIMEIRO?(X OU O)\n");
+	scanf("%c",&qcomeca);
+	limparbuffer();
+
+	if(qcomeca == 'X'){
+		player = 'X';
+	}else{
+		player = 'O';
+	}
+
+	imprimir_tabuleiro();
+
+	jogar(player);		
+
+	imprimir_tabuleiro();
+
+	while(continuar){
+		trocar_turno(&player);
+		imprimir_tabuleiro();
+
+		jogar(player);		
+	
+		imprimir_tabuleiro();
+		if(player_winn('X')){
+			system("clear");
+			imprimir_tabuleiro();
+			printf("\nJOGADOR X VENCEU!!\n-ENTER PARA FINALZAR-");
+			getchar();
+			continuar = 0;
+		}else if(player_winn('O')){
+			system("clear");
+			imprimir_tabuleiro();
+			printf("\nJOGADOR O VENCEU!!\n-ENTER PARA FINALZAR-");
+			getchar();		
+			continuar = 0;	
+		}else if(verificar_velha()){
+			system("clear");
+			imprimir_tabuleiro();
+			printf("\nDEU VELHA!\n-ENTER PARA FINALZAR-");
+			getchar();		
+			continuar = 0;	
+		}			
+	}	 
+}
 
 //MENU PRINCIPAL
 void menu_principal(void){
@@ -478,6 +528,7 @@ void menu_principal(void){
 				P1VSCPU();
 				break;
 			case 2:
+				multiplayer();
 				break;
 			case 3:
 				break;
