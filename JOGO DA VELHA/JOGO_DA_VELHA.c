@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "users.h"
 
 
 char jdv[3][3];
 
 //IMPRIME TABULEIRO
-void imprimir_tabuleiro(){
+void imprimir_tabuleiro(int pX,int pO){
 	system("clear");
+	printf("---------------------------PLACAR--------------------------------\n");
+	printf("Player X: %3i\n",pX);
+	printf("Player O: %3i\n",pO);
+	printf("-----------------------------------------------------------------\n");
 	printf("%c|%c|%c\n",jdv[0][0],jdv[0][1],jdv[0][2]);
 	printf("-----\n");
 	printf("%c|%c|%c\n",jdv[1][0],jdv[1][1],jdv[1][2]);
@@ -316,46 +321,133 @@ int IA_verificacao_secundaria(int coordenadas[2]){
 	}
 	return 0;
 }	
-
+int IA_verificacao_cantos(int coordenadas[2]){
+	if(jdv[0][0] != ' ' || jdv[0][2] != ' ' || jdv[2][0] != ' ' || jdv[2][2] != ' '){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+int IA_verificacao_meio(int coordenadas[2]){
+	if(jdv[1][1] != ' '){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+int IA_verificacao_jogada_unica(int coordenadas[2]){
+	if(jdv[0][0] == 'X' && jdv[1][1] == 'O' && jdv[2][2] == 'X'){
+		return 1;
+	}else if(jdv[0][2] == 'X' && jdv[1][1] == 'O' && jdv[2][0] == 'X'){
+		return 1;
+	}else{
+		return 0;
+	}
+}
 //RETORNA COORDENADA ONDE A IA DESEJA JOGAR
-void IA(int coordenadas[2]){
-	//PRIMEIRO PASSO
-
-	if(IA_verificacao_principal('O', coordenadas)){
-		return;
-	}
-	//SEGUNDO PASSO
-	if(IA_verificacao_principal('X', coordenadas)){
-		return;
-	}
-	//TERCEIRO PASSO
-	if(IA_verificacao_secundaria(coordenadas)){
-		return;
-	}
-	//QUARTO PASSO
-	for(int L = 0;L<3;L++){
-		for(int C = 0;C<3;C++){
-			if(jdv[L][C] == ' '){
-				coordenadas[0] = L;
-				coordenadas[1] = C;
-				return;				
+void IA(int coordenadas[2],int dificuldade,char qcomeca,int rodada){
+	if(dificuldade == 1){
+		for(int L = 0;L<3;L++){
+			for(int C = 0;C<3;C++){
+				if(jdv[L][C] == ' '){
+					coordenadas[0] = L;
+					coordenadas[1] = C;
+					return;				
+				}
+			}
+		}		
+	}else if(dificuldade == 2){
+		//PRIMEIRO PASSO
+		if(IA_verificacao_principal('O', coordenadas)){
+			return;
+		}
+		//SEGUNDO PASSO
+		if(IA_verificacao_principal('X', coordenadas)){
+			return;
+		}
+		//TERCEIRO PASSO
+		if(IA_verificacao_secundaria(coordenadas)){
+			return;
+		}
+		//QUARTO PASSO
+		for(int L = 0;L<3;L++){
+			for(int C = 0;C<3;C++){
+				if(jdv[L][C] == ' '){
+					coordenadas[0] = L;
+					coordenadas[1] = C;
+					return;				
+				}
 			}
 		}
+	}else{
+		if(IA_verificacao_principal('O', coordenadas)){
+			return;
+		}
+		//SEGUNDO PASSO
+		if(IA_verificacao_principal('X', coordenadas)){
+			return;
+		}
+		//TERCEIRO PASSO
+				if(qcomeca == 'S'){
+			if(rodada == 1){
+				if(IA_verificacao_cantos(coordenadas) == 1){
+					coordenadas[0] = 1;
+					coordenadas[1] = 1;
+					return;
+				}
+	
+				if(IA_verificacao_meio(coordenadas) == 1){
+					coordenadas[0] = 0;
+					coordenadas[1] = 0;
+					return;
+				}	
+			}
+			else if(rodada == 3){
+				if(IA_verificacao_jogada_unica(coordenadas) == 1){
+					coordenadas[0] = 1;
+					coordenadas[1] = 0;
+					return;
+				}
+			}
+		}else{
+			if(rodada == 0){
+				coordenadas[0] = 0;
+				coordenadas[1] = 0;
+			}
+			if(rodada == 2){
+				
+			}
+		}
+
+		//QUARTO PASSO
+		if(IA_verificacao_secundaria(coordenadas)){
+			return;
+		}
+		//QUINTO PASSO
+		for(int L = 0;L<3;L++){
+			for(int C = 0;C<3;C++){
+				if(jdv[L][C] == ' '){
+					coordenadas[0] = L;
+					coordenadas[1] = C;
+					return;				
+				}
+			}
+		}				
 	}
 }
 
 // CONTROLA A JOGADA DO COMPUTADOR
-void PC(){
-system("clear");
-int posicao_PC;
-int coordenadas[2];
-IA(coordenadas);
-jdv[coordenadas[0]][coordenadas[1]] = 'O';
-posicao_PC = (coordenadas[0])*3 + (coordenadas[1]+1);
-printf("O COMPUTADOR JOGOU NA POSICAO %i\n",posicao_PC);
-printf("-ENTER PARA CONTINUAR-");
-getchar();
-return;
+void PC(int dificuldade,char qcomeca,int rodada){
+	system("clear");
+	int posicao_PC;
+	int coordenadas[2];
+	IA(coordenadas, dificuldade,qcomeca,rodada);
+	jdv[coordenadas[0]][coordenadas[1]] = 'O';
+	posicao_PC = (coordenadas[0])*3 + (coordenadas[1]+1);
+	printf("O COMPUTADOR JOGOU NA POSICAO %i\n",posicao_PC);
+	printf("-ENTER PARA CONTINUAR-");
+	getchar();
+	return;
 }
 
 //FUNÇÂO PARA TROCAR DE TRUNO ENTRE JOGADORES
@@ -365,7 +457,7 @@ void trocar_turno(char* current_player){
 	}else{
 		*current_player = 'X';
 	}
-	printf("-ESPAÇO PARA CONTINUAR PARA O TURNO DO PLAYER %c-",*current_player);
+	printf("-ENTER PARA CONTINUAR PARA O TURNO DO PLAYER %c-",*current_player);
 	getchar();
 }
 
@@ -386,115 +478,286 @@ void jogar(char player){
 	atualizar_tabuleiro(Posi, player);
 }
 
+void adicionar_historico(int vitorias,int derrotas){
+	char name[100];	
+	int corad;
+	int contador;
+	int tamanho = 0;
+	Usuario **perfil = start_lista();
+
+	perfil = ler_arquivo("nomes.txt");
+
+	contador = (imprimir_lista(perfil)+1);
+
+	do{
+		system("clear");
+		if(corad > contador){
+			printf("OPCAO INVALIDA!DIGITE NOVAMENTE!\n");
+			getchar();
+		}
+		system("clear");		
+		printf("Selecione Um dos Perfis: \n");
+		imprimir_lista(perfil);
+		printf("|(%3i) Criar um Novo Perfil                                        |\n",contador);
+		scanf("%i",&corad);
+
+		limparbuffer();		
+	}while(corad > contador);
+
+	if(corad == contador){
+		system("clear");
+		do{
+			system("clear");
+			if(tamanho > 10){
+				printf("DIGITE NOVAMENTE!O NOME POSSUI MAIS DE 10 CARACTERES!\n");
+				getchar();
+			}
+			printf("Digite o nome do perfil que deseja criar: (MAXIMO DE 10 CARACTERES)\n");
+			scanf("%s",name);
+			limparbuffer();
+			tamanho = strlen(name);			
+		}while(tamanho >= 10);
+		add_usuario(perfil,name,vitorias,derrotas);
+		imprimir_lista(perfil);
+		imprimir_arquivo(perfil,"nomes.txt");
+	}else{
+		Usuario *pesquisa;
+		pesquisa = contar_usuario(perfil,corad);
+		editar_usuario(pesquisa,pesquisa->nome,vitorias,derrotas);
+		imprimir_arquivo(perfil,"nomes.txt");
+		imprimir_usuario(pesquisa,0);
+		getchar();
+	}
+}
+void continuar_jogando(int *continuar,int vitoria,int derrota){
+	char soun;
+	system("clear");
+	printf("Gostaria de Continuar Jogando?(S ou N)\n");
+	scanf(" %c",&soun);
+	limparbuffer();
+	if(soun == 'S'){
+	}else{
+		adicionar_historico(vitoria,derrota);
+		*continuar = 0;
+	}
+}
+
 //MODO DE COMPUTADOR VS JOGADOR
-void P1VSCPU(){
+void P1VSCPU(int dificuldade){
+	int *pont;
+	int partida = 1;
 	int continuar = 1;
 	char player;
 	int Posi;
 	char qcomeca; 
+	int vitoria = 0;
+	int derrota = 0;
+	int rodada = 0;
+	pont = &partida;
 
-	printf("VOCE E O JOGADOR X\n");
-	printf("VOCE QUER COMECAR JOGANDO?(S OU N)\n");
-	scanf("%c",&qcomeca);
-	limparbuffer();
+	while(partida){
+	rodada = 0;
+	for(int L = 0;L<3;L++){
+		for(int C = 0;C<3;C++){
+			jdv[L][C] = ' ';
+		}
+	}	
+		system("clear");
+		printf("VOCE E O JOGADOR X\n");
+		printf("VOCE QUER COMECAR JOGANDO?(S OU N)\n");
+		scanf("%c",&qcomeca);
+		limparbuffer();
 
-	if(qcomeca == 'S'){
-		player = 'X';
-	}else{
-		player = 'O';
-	}
+		if(qcomeca == 'S'){
+			player = 'X';
+		}else{
+			player = 'O';
+		}
 
-	imprimir_tabuleiro();
+		imprimir_tabuleiro(vitoria,derrota);
 
-	if(player == 'X'){
-		jogar(player);		
-	}else{
-		PC();
-	}
-
-	imprimir_tabuleiro();
-
-	while(continuar){
-		trocar_turno(&player);
-		imprimir_tabuleiro();
 		if(player == 'X'){
 			jogar(player);		
 		}else{
-			PC();
+			PC(dificuldade,qcomeca,rodada);
 		}
-		imprimir_tabuleiro();
-		if(player_winn('X')){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nVOCE VENCEU!\n-ENTER PARA FINALZAR-");
-			getchar();
-			continuar = 0;
-		}else if(player_winn('O')){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nVOCE PERDEU!\n-ENTER PARA FINALZAR-");
-			getchar();		
-			continuar = 0;	
-		}else if(verificar_velha()){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nDEU VELHA!\n-ENTER PARA FINALZAR-");
-			getchar();		
-			continuar = 0;	
-		}			
+
+		imprimir_tabuleiro(vitoria,derrota);
+
+		while(continuar){
+		rodada++;
+			trocar_turno(&player);
+			imprimir_tabuleiro(vitoria,derrota);
+			if(player == 'X'){
+				jogar(player);		
+			}else{
+				PC(dificuldade,qcomeca,rodada);
+			}
+			imprimir_tabuleiro(vitoria,derrota);
+			if(player_winn('X')){
+				vitoria++;
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nVOCE VENCEU!\n");
+				getchar();
+				continuar_jogando(pont,vitoria,derrota);
+				break;
+			}else if(player_winn('O')){
+				derrota++;
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nVOCE PERDEU!\n");
+				getchar();
+				continuar_jogando(pont,vitoria,derrota);
+				break;			
+			}else if(verificar_velha()){
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nDEU VELHA!\n-");
+				getchar();
+				continuar_jogando(pont,vitoria,derrota);
+				break;						
+			}
+		}	
 	}
-
-
 }
+
 void multiplayer(){
+	char soun;
+	int vitoria = 0;
+	int derrota = 0;
 	int continuar = 1;
 	char player;
 	int Posi;
 	char qcomeca; 
-		
-	printf("QUEM JOGA PRIMEIRO?(X OU O)\n");
-	scanf("%c",&qcomeca);
-	limparbuffer();
+	int rodada = 1;
+	while(rodada){
+	continuar = 1;
+		for(int L = 0;L<3;L++){
+			for(int C = 0;C<3;C++){
+				jdv[L][C] = ' ';
+			}
+		}		
+		system("clear");
+		printf("QUEM JOGA PRIMEIRO?(X OU O)\n");
+		scanf("%c",&qcomeca);
+		limparbuffer();
 
-	if(qcomeca == 'X'){
-		player = 'X';
-	}else{
-		player = 'O';
-	}
+		if(qcomeca == 'X'){
+			player = 'X';
+		}else{
+			player = 'O';
+		}
 
-	imprimir_tabuleiro();
-
-	jogar(player);		
-
-	imprimir_tabuleiro();
-
-	while(continuar){
-		trocar_turno(&player);
-		imprimir_tabuleiro();
+		imprimir_tabuleiro(vitoria,derrota);
 
 		jogar(player);		
-	
-		imprimir_tabuleiro();
-		if(player_winn('X')){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nJOGADOR X VENCEU!!\n-ENTER PARA FINALZAR-");
-			getchar();
-			continuar = 0;
-		}else if(player_winn('O')){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nJOGADOR O VENCEU!!\n-ENTER PARA FINALZAR-");
-			getchar();		
-			continuar = 0;	
-		}else if(verificar_velha()){
-			system("clear");
-			imprimir_tabuleiro();
-			printf("\nDEU VELHA!\n-ENTER PARA FINALZAR-");
-			getchar();		
-			continuar = 0;	
-		}			
-	}	 
+
+		imprimir_tabuleiro(vitoria,derrota);
+
+		while(continuar){
+			trocar_turno(&player);
+			imprimir_tabuleiro(vitoria,derrota);
+
+			jogar(player);		
+		
+			imprimir_tabuleiro(vitoria,derrota);
+			if(player_winn('X')){
+				vitoria++;
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nJOGADOR X VENCEU!!\n");
+				getchar();
+				printf("Quer Continuar Jogando?");
+				scanf(" %c",&soun);
+				limparbuffer();
+				if(soun == 'S'){
+					continuar = 0;		
+				}else{
+					continuar = 0;
+					rodada = 0;
+				}
+			}else if(player_winn('O')){
+				derrota++;
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nJOGADOR O VENCEU!!\n");
+				getchar();		
+				printf("Quer Continuar Jogando?");
+				scanf(" %c",&soun);
+				limparbuffer();
+				if(soun == 'S'){
+					continuar = 0;		
+				}else{
+					continuar = 0;
+					rodada = 0;
+				}				
+			}else if(verificar_velha()){
+				system("clear");
+				imprimir_tabuleiro(vitoria,derrota);
+				printf("\nDEU VELHA!\n-");
+				getchar();
+				printf("Quer Continuar Jogando?");
+				scanf(" %c",&soun);
+				limparbuffer();
+				if(soun == 'S'){
+					continuar = 0;		
+				}else{
+					continuar = 0;
+					rodada = 0;
+				}		
+			}			
+		}	
+	}
+}
+
+void Historico(){
+	char nome[100];
+	int contador;
+	int selec;
+	Usuario *pesquisar;
+	Usuario **Historico = start_lista();
+
+	Historico = ler_arquivo("nomes.txt");	
+
+	contador = imprimir_lista(Historico)+1;
+	system("clear");
+	printf("----------------------------HISTORICO-------------------------------\n");
+	imprimir_lista(Historico);
+	printf("|(%3i) Deletar Perfil                                              |\n",contador);
+	printf("|(%3i) Editar Perfil                                               |\n",contador+1);
+	printf("|(%3i) Voltar Para o Menu                                          |\n",contador+2);	
+	scanf("%i",&selec);
+	limparbuffer();
+	if(selec == contador){
+		system("clear");
+		imprimir_lista(Historico);
+		printf("Selecione um Perfil para Deletar\n");
+		scanf("%i",&selec);
+		limparbuffer();
+		pesquisar = contar_usuario(Historico,selec);
+		deletar_usuario(Historico,pesquisar->nome);
+		system("clear");
+		imprimir_lista(Historico);
+		imprimir_arquivo(Historico,"nomes.txt");
+		getchar();
+	}else if(selec == contador + 1){
+		system("clear");
+		imprimir_lista(Historico);
+		printf("Selecione um Perfil para Editar\n");
+		scanf("%i",&selec);
+		limparbuffer();
+		pesquisar = contar_usuario(Historico,selec);
+		printf("Digite o Novo Nome que deseja: ");
+		scanf("%s",nome);
+		limparbuffer();
+		editar_usuario(pesquisar,nome,0,0);		
+		imprimir_lista(Historico);
+		imprimir_arquivo(Historico,"nomes.txt");
+	}else if(selec == contador + 2){
+		return;
+	}
+	getchar();
 }
 
 //MENU PRINCIPAL
@@ -509,51 +772,47 @@ void menu_principal(void){
 
 		system("clear");
 		printf(" ___________________________________________________________\n");
-		printf("|                       |JOGO DA VELHA|                     |\n");
+		printf("|                     |JOGO DA VELHA|                       |\n");
 		printf("|                                                           |\n");
 		printf("|Escolha uma das opcoes:                                    |\n");
 		printf("|(1) P1 VS CPU.                                             |\n");
 		printf("|(2) P1 vs P2.                                              |\n");
-		printf("|(3) Pontuacao.                                             |\n");
+		printf("|(3) Historico.                                             |\n");
 		printf("|(4) Sair do Jogo.                                          |\n");
 		printf("|-----------------------------------------------------------|\n");
-
-
 		scanf("%i",&selec);
 		limparbuffer();
 		system("clear");
-
 		switch(selec){
 			case 1:
-				P1VSCPU();
+				system("clear");
+				printf(" ___________________________________________________________\n");
+				printf("|                     |JOGO DA VELHA|                       |\n");
+				printf("|                                                           |\n");
+				printf("|Escolha uma Dificuldade:                                   |\n");
+				printf("|(1) Facil.                                                 |\n");
+				printf("|(2) Medio.                                                 |\n");
+				printf("|(3) Dificil.                                               |\n");
+				printf("|-----------------------------------------------------------|\n");
+				scanf("%i",&selec);			
+				limparbuffer();	
+				P1VSCPU(selec);
 				break;
 			case 2:
 				multiplayer();
 				break;
 			case 3:
+				Historico();
 				break;
 			case 4:
 				exit(0);
 				break;												
 		}
-
 	}
 }
 
 //MAIN
 void main(void){
-	/*
-	**TESTE DE LIMPEZA DO BUFFER
-	scanf("%c");
-	limparbuffer();
-	scanf("%i");
-	limparbuffer();
-	getchar();
-	scanf("%c");
-	limparbuffer();
-	getchar();
-	*/
 	menu_principal();
-	return;
 }
 
