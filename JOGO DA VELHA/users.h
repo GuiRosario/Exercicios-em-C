@@ -90,7 +90,7 @@ void add_usuario(Usuario **lista,char nome[100],int vitorias,int derrotas){
 	referencia->proximo = set_usuario(nome,vitorias,derrotas);
 }
 
-//
+//FUNÇÂO QUE PESQUISA UM USARIO NA LISAT APARTIR DE UM NOME PASSADO E RETORNA AQUELE USUARIO
 Usuario* pesquisar_usuario(Usuario **lista,char nome[100]){
 	int diferentes;	
 	Usuario *item;
@@ -105,6 +105,7 @@ Usuario* pesquisar_usuario(Usuario **lista,char nome[100]){
 	return NULL;
 }
 
+//FUNÇÃO QUE DELETA UM USUARIO DA LISTA APARTIR DE UM NOME PASSADO E RETORNA SE FOI APAGADO OU N
 int deletar_usuario(Usuario **lista,char nome[100]){
 
 	Usuario *delete_item;
@@ -132,6 +133,8 @@ int deletar_usuario(Usuario **lista,char nome[100]){
 
 	return 0;
 }
+
+//FUNÇÂO QUE EDITA AS INFORMAÇÕES DE UM USUARIO DA LISTA
 int editar_usuario(Usuario *usuario,char nome[100],int vitorias,int derrotas){
 	if(usuario == NULL){
 		return 0;
@@ -142,6 +145,7 @@ int editar_usuario(Usuario *usuario,char nome[100],int vitorias,int derrotas){
 	}
 }
 
+//FUNÇÃO ONDE DADOS DE UM ARQUIVO SAO ADICIONADOS A UMA LISTA
 Usuario** ler_arquivo(char nome_arquivo[100]){
 	char frase[200];
 	char nome[100];
@@ -161,6 +165,8 @@ Usuario** ler_arquivo(char nome_arquivo[100]){
 	fclose(arquivo);
 	return lista;
 }
+
+//FUNÇÂO QUE IMPRIME AS INFORMAÇÕES DA LISTA E AS SALVA EM UM ARQUIVO
 void imprimir_arquivo(Usuario **lista,char nome_arquivo[100]){	
 	FILE *arquivo;
 	arquivo = fopen(nome_arquivo,"w");	
@@ -176,6 +182,7 @@ void imprimir_arquivo(Usuario **lista,char nome_arquivo[100]){
 
 }
 
+//FUNÇÃO QUE RETORNA UM USUARIO APARTIR DA SUA POSIÇÃO NA LISTA
 Usuario* contar_usuario(Usuario **lista,int n){
 	Usuario *item;
 	item = *lista;

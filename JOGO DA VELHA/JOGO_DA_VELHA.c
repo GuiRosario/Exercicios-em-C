@@ -320,30 +320,65 @@ int IA_verificacao_secundaria(int coordenadas[2]){
 		}
 	}
 	return 0;
-}	
+}
+
+//VERIFICA SE UM ESPAÇO DO TABULEIRO ESTA VAZIO
+int verificacao_espaco(int linha,int coluna){
+	if(jdv[linha][coluna] == ' '){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+//VERIFICA SE UM ESPAÇO CONTEM X
+int verificacao_X(int linha,int coluna){
+	if(jdv[linha][coluna] == 'X'){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+//VERIFICA SE UM ESPAÇO CONTEM O
+int verificacao_O(int linha,int coluna){
+	if(jdv[linha][coluna] == 'O'){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+//VERIFICA SE ALGUM CANTO ESTA VAZIO
 int IA_verificacao_cantos(int coordenadas[2]){
-	if(jdv[0][0] != ' ' || jdv[0][2] != ' ' || jdv[2][0] != ' ' || jdv[2][2] != ' '){
+	if(verificacao_espaco(0,0) == 1|| verificacao_espaco(0,2)  == 1||verificacao_espaco(2,0) == 1||verificacao_espaco(2,2) == 1){
 		return 1;
 	}else{
 		return 0;
 	}
 }
+
+//VERIFICA SE O ESPAÇO DO MEIO DO TABULEIRO ESTA VAZIO
 int IA_verificacao_meio(int coordenadas[2]){
-	if(jdv[1][1] != ' '){
+	if(verificacao_espaco(1,1) == 1){
 		return 1;
 	}else{
 		return 0;
 	}
+
 }
+
+//VERIFICA SE UM ESTADO ESPECIFICO DE UM JOGADA É TRUE OR FALSE
 int IA_verificacao_jogada_unica(int coordenadas[2]){
-	if(jdv[0][0] == 'X' && jdv[1][1] == 'O' && jdv[2][2] == 'X'){
+	if(verificacao_X(0,0) == 1 && verificacao_O(1,1) == 1 && verificacao_X(2,2) == 1){
 		return 1;
-	}else if(jdv[0][2] == 'X' && jdv[1][1] == 'O' && jdv[2][0] == 'X'){
+	}else if(verificacao_X(0,2) == 1 && verificacao_O(1,1) == 1 && verificacao_X(2,0) == 1){
 		return 1;
 	}else{
 		return 0;
 	}
 }
+
 //RETORNA COORDENADA ONDE A IA DESEJA JOGAR
 void IA(int coordenadas[2],int dificuldade,char qcomeca,int rodada){
 	if(dificuldade == 1){
@@ -388,7 +423,7 @@ void IA(int coordenadas[2],int dificuldade,char qcomeca,int rodada){
 			return;
 		}
 		//TERCEIRO PASSO
-				if(qcomeca == 'S'){
+		if(qcomeca == 'S'){
 			if(rodada == 1){
 				if(IA_verificacao_cantos(coordenadas) == 1){
 					coordenadas[0] = 1;
@@ -413,9 +448,30 @@ void IA(int coordenadas[2],int dificuldade,char qcomeca,int rodada){
 			if(rodada == 0){
 				coordenadas[0] = 0;
 				coordenadas[1] = 0;
+				return;
 			}
 			if(rodada == 2){
-				
+				if(verificacao_espaco(2,2) == 1){
+				coordenadas[0] = 2;
+				coordenadas[1] = 2;
+				return;					
+				}else{
+				coordenadas[0] = 1;
+				coordenadas[1] = 1;
+				return;						
+				}
+			}
+			if(rodada == 4){
+					if(verificacao_espaco(2,0) == 1){
+						coordenadas[0] = 2;
+						coordenadas[1] = 0;	
+						return;				
+					}else{
+						coordenadas[0] = 0;
+						coordenadas[1] = 2;
+						return;							
+					}				
+				}
 			}
 		}
 
@@ -434,7 +490,6 @@ void IA(int coordenadas[2],int dificuldade,char qcomeca,int rodada){
 			}
 		}				
 	}
-}
 
 // CONTROLA A JOGADA DO COMPUTADOR
 void PC(int dificuldade,char qcomeca,int rodada){
@@ -478,9 +533,10 @@ void jogar(char player){
 	atualizar_tabuleiro(Posi, player);
 }
 
+//CRIA UM PERFIL PARA SALVAR OS SEUS PONTOS OU OS ADICIONA A UM JA EXISTENTE
 void adicionar_historico(int vitorias,int derrotas){
 	char name[100];	
-	int corad;
+	int corad = 0;
 	int contador;
 	int tamanho = 0;
 	Usuario **perfil = start_lista();
@@ -492,7 +548,7 @@ void adicionar_historico(int vitorias,int derrotas){
 	do{
 		system("clear");
 		if(corad > contador){
-			printf("OPCAO INVALIDA!DIGITE NOVAMENTE!\n");
+			printf("OPCAO INVALIDA!DIGITE NOVAMENTE!(ENTER PARA CONTINUAR)\n");
 			getchar();
 		}
 		system("clear");		
@@ -526,19 +582,42 @@ void adicionar_historico(int vitorias,int derrotas){
 		editar_usuario(pesquisa,pesquisa->nome,vitorias,derrotas);
 		imprimir_arquivo(perfil,"nomes.txt");
 		imprimir_usuario(pesquisa,0);
+		printf("(ENTER PARA CONTINUAR)");
 		getchar();
 	}
 }
-void continuar_jogando(int *continuar,int vitoria,int derrota){
+
+//FUNÇAO QUE PERGUNTA AO JOGADOR SE GOSTARIA DE CONTINUAR JOGANDO
+void continuar_jogando(int *continuar,int vitoria,int derrota,int MOUS){
 	char soun;
 	system("clear");
 	printf("Gostaria de Continuar Jogando?(S ou N)\n");
 	scanf(" %c",&soun);
 	limparbuffer();
-	if(soun == 'S'){
+	if(MOUS == 1){
+		if(soun == 'S'){
+			return;
+		}
+		for(int x = 0;x < 2;x++){
+			if(x == 0){
+				printf("JOGADOR X ADICIONE SEU HISTORICO: (APERTE ENTER PARA CONTINUAR)");
+				getchar();
+				adicionar_historico(vitoria,derrota);
+				*continuar = 0;
+			}else{
+				printf("JOGADOR O ADICIONE SEU HISTORICO: (APERTE ENTER PARA CONTINUAR)");
+				getchar();
+				adicionar_historico(derrota,vitoria);
+				*continuar = 0;				
+			}
+		}
 	}else{
-		adicionar_historico(vitoria,derrota);
-		*continuar = 0;
+		if(soun == 'S'){
+			return;
+		}else{
+			adicionar_historico(vitoria,derrota);
+			*continuar = 0;
+		}		
 	}
 }
 
@@ -600,7 +679,7 @@ void P1VSCPU(int dificuldade){
 				imprimir_tabuleiro(vitoria,derrota);
 				printf("\nVOCE VENCEU!\n");
 				getchar();
-				continuar_jogando(pont,vitoria,derrota);
+				continuar_jogando(pont,vitoria,derrota,0);
 				break;
 			}else if(player_winn('O')){
 				derrota++;
@@ -608,29 +687,32 @@ void P1VSCPU(int dificuldade){
 				imprimir_tabuleiro(vitoria,derrota);
 				printf("\nVOCE PERDEU!\n");
 				getchar();
-				continuar_jogando(pont,vitoria,derrota);
+				continuar_jogando(pont,vitoria,derrota,0);
 				break;			
 			}else if(verificar_velha()){
 				system("clear");
 				imprimir_tabuleiro(vitoria,derrota);
 				printf("\nDEU VELHA!\n-");
 				getchar();
-				continuar_jogando(pont,vitoria,derrota);
+				continuar_jogando(pont,vitoria,derrota,0);
 				break;						
 			}
 		}	
 	}
 }
 
+//MODO MULTIJOGADOR DE JOGO
 void multiplayer(){
 	char soun;
-	int vitoria = 0;
-	int derrota = 0;
+	int *pont;
+	int vitoriaX = 0;
+	int vitoriaO = 0;
 	int continuar = 1;
 	char player;
 	int Posi;
 	char qcomeca; 
 	int rodada = 1;
+	pont = &rodada;
 	while(rodada){
 	continuar = 1;
 		for(int L = 0;L<3;L++){
@@ -649,68 +731,48 @@ void multiplayer(){
 			player = 'O';
 		}
 
-		imprimir_tabuleiro(vitoria,derrota);
+		imprimir_tabuleiro(vitoriaX,vitoriaO);
 
 		jogar(player);		
 
-		imprimir_tabuleiro(vitoria,derrota);
+		imprimir_tabuleiro(vitoriaX,vitoriaO);
 
 		while(continuar){
 			trocar_turno(&player);
-			imprimir_tabuleiro(vitoria,derrota);
+			imprimir_tabuleiro(vitoriaX,vitoriaO);
 
 			jogar(player);		
 		
-			imprimir_tabuleiro(vitoria,derrota);
+			imprimir_tabuleiro(vitoriaX,vitoriaO);
 			if(player_winn('X')){
-				vitoria++;
+				vitoriaX++;
 				system("clear");
-				imprimir_tabuleiro(vitoria,derrota);
+				imprimir_tabuleiro(vitoriaX,vitoriaO);
 				printf("\nJOGADOR X VENCEU!!\n");
 				getchar();
-				printf("Quer Continuar Jogando?");
-				scanf(" %c",&soun);
-				limparbuffer();
-				if(soun == 'S'){
-					continuar = 0;		
-				}else{
-					continuar = 0;
-					rodada = 0;
-				}
+				continuar_jogando(pont,vitoriaX,vitoriaO,1);
+				break;
 			}else if(player_winn('O')){
-				derrota++;
+				vitoriaO++;
 				system("clear");
-				imprimir_tabuleiro(vitoria,derrota);
+				imprimir_tabuleiro(vitoriaX,vitoriaO);
 				printf("\nJOGADOR O VENCEU!!\n");
 				getchar();		
-				printf("Quer Continuar Jogando?");
-				scanf(" %c",&soun);
-				limparbuffer();
-				if(soun == 'S'){
-					continuar = 0;		
-				}else{
-					continuar = 0;
-					rodada = 0;
-				}				
+				continuar_jogando(pont,vitoriaX,vitoriaO,1);
+				break;							
 			}else if(verificar_velha()){
 				system("clear");
-				imprimir_tabuleiro(vitoria,derrota);
+				imprimir_tabuleiro(vitoriaX,vitoriaO);
 				printf("\nDEU VELHA!\n-");
 				getchar();
-				printf("Quer Continuar Jogando?");
-				scanf(" %c",&soun);
-				limparbuffer();
-				if(soun == 'S'){
-					continuar = 0;		
-				}else{
-					continuar = 0;
-					rodada = 0;
-				}		
+				continuar_jogando(pont,vitoriaX,vitoriaO,1);
+				break;						
 			}			
 		}	
 	}
 }
 
+//OPÇÂO Q MOSTRA OS PERFIS DOS JOGADORES SALVOS E SUAS RESPECTIVAS PONTUAÇÕES 
 void Historico(){
 	char nome[100];
 	int contador;
